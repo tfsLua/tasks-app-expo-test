@@ -1,8 +1,27 @@
-import { useEffect, useState } from 'react';
-import { StyleSheet, Text, View, TextInput, TouchableOpacity, ScrollView, SafeAreaView, Platform, StatusBar as RNStatusBar } from 'react-native';
-import { StatusBar } from 'expo-status-bar';
-import Task from './src/components/Task';
-import { addTask, deleteTask, getAllTasks, updateTask, TaskItem } from './src/utils/handle-api';
+import { useEffect, useState } from "react";
+import {
+  StyleSheet,
+  Text,
+  View,
+  TextInput,
+  TouchableOpacity,
+  SafeAreaView,
+  Platform,
+  StatusBar as RNStatusBar,
+  Button,
+  Image,
+} from "react-native";
+import { StatusBar } from "expo-status-bar";
+
+import TaskList from "./src/components/taskList";
+
+import {
+  addTask,
+  deleteTask,
+  getAllTasks,
+  updateTask,
+  TaskItem,
+} from "./src/utils/handle-api";
 
 export default function App() {
   const [tasks, setTasks] = useState<TaskItem[]>([]);
@@ -20,24 +39,40 @@ export default function App() {
     setTaskId(_id);
   };
 
+  const deleteAll = () => {
+    setTasks([]);
+  };
+
   return (
     <SafeAreaView style={styles.safeArea}>
       <View style={styles.container}>
+        {/* ✅ IMAGEM */}
+        <Image
+          source={{
+            uri: "https://cdn-icons-png.flaticon.com/512/906/906334.png",
+          }}
+          style={styles.image}
+        />
+
         <Text style={styles.header}>Tarefas</Text>
+
+        <Text style={styles.counter}>Total de tarefas: {tasks.length}</Text>
 
         <View style={styles.top}>
           <TextInput
             style={styles.input}
-            placeholder="Adicione uma tarefa..."
+            placeholder="Digite sua tarefa..."
             value={text}
-            onChangeText={(val) => setText(val)}
+            maxLength={50}
+            onChangeText={setText}
           />
 
           <TouchableOpacity
             style={styles.addButton}
             onPress={
               isUpdating
-                ? () => updateTask(taskId, text, setTasks, setText, setIsUpdating)
+                ? () =>
+                    updateTask(taskId, text, setTasks, setText, setIsUpdating)
                 : () => addTask(text, setText, setTasks)
             }
           >
@@ -47,17 +82,17 @@ export default function App() {
           </TouchableOpacity>
         </View>
 
-        <ScrollView style={styles.list} contentContainerStyle={styles.listContent}>
-          {tasks.map((item) => (
-            <Task
-              key={item._id}
-              text={item.text}
-              updateMode={() => updateMode(item._id, item.text)}
-              deleteToDo={() => deleteTask(item._id, setTasks)}
-            />
-          ))}
-        </ScrollView>
+        <Button title="Excluir todas" onPress={deleteAll} />
+
+        <TaskList
+          tasks={tasks}
+          onDelete={(id: string) => deleteTask(id, setTasks)}
+          onEdit={(id: string, text: string) =>
+            updateTask(id, text, setTasks, setText, setIsUpdating)
+          }
+        />
       </View>
+
       <StatusBar style="auto" />
     </SafeAreaView>
   );
@@ -66,55 +101,43 @@ export default function App() {
 const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
-    backgroundColor: '#fff',
-    paddingTop: Platform.OS === 'android' ? RNStatusBar.currentHeight : 0,
+    paddingTop: Platform.OS === "android" ? RNStatusBar.currentHeight : 0,
   },
   container: {
     flex: 1,
-    maxWidth: 600,
-    width: '100%',
-    alignSelf: 'center',
-    paddingHorizontal: 16,
+    padding: 16,
+    alignItems: "center",
+  },
+  image: {
+    width: 80,
+    height: 80,
+    marginBottom: 10,
   },
   header: {
-    marginTop: 16,
-    textAlign: 'center',
     fontSize: 24,
-    fontWeight: 'bold',
+    fontWeight: "bold",
+  },
+  counter: {
+    marginTop: 5,
+    marginBottom: 10,
   },
   top: {
-    marginTop: 16,
-    flexDirection: 'row',
-    gap: 16,
-    justifyContent: 'center',
-    alignItems: 'center',
+    flexDirection: "row",
+    marginTop: 10,
+    gap: 10,
   },
   input: {
-    flex: 1,
-    paddingVertical: 8,
-    paddingHorizontal: 16,
-    borderBottomWidth: 1,
-    borderBottomColor: '#000',
-    fontSize: 16,
+    borderWidth: 1,
+    padding: 10,
+    width: 200,
+    borderRadius: 6,
   },
   addButton: {
-    backgroundColor: '#000',
-    paddingVertical: 12,
-    paddingHorizontal: 24,
-    borderRadius: 4,
-    justifyContent: 'center',
-    alignItems: 'center',
+    backgroundColor: "#000",
+    padding: 10,
+    borderRadius: 6,
   },
   addButtonText: {
-    color: '#fff',
-    fontWeight: 'bold',
-    fontSize: 16,
+    color: "#fff",
   },
-  list: {
-    marginTop: 16,
-    flex: 1,
-  },
-  listContent: {
-    paddingBottom: 24,
-  }
 });
