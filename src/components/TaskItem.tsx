@@ -8,16 +8,16 @@ interface TaskProps {
   deleteToDo: () => void;
 }
 
-const Task: React.FC<TaskProps> = ({ text, updateMode, deleteToDo }) => {
+const TaskItem: React.FC<TaskProps> = ({ text, updateMode, deleteToDo }) => {
   return (
     <View style={styles.todo}>
       <Text style={styles.text}>{text}</Text>
       <View style={styles.icons}>
         <TouchableOpacity onPress={updateMode}>
-          <Feather name="edit" size={20} color="#fff" style={styles.icon} />
+          <Feather name="edit" size={20} color="#2b93f3" style={styles.icon} />
         </TouchableOpacity>
         <TouchableOpacity onPress={deleteToDo}>
-          <AntDesign name="delete" size={20} color="#fff" style={styles.icon} />
+          <AntDesign name="delete" size={20} color="#ff3232" style={styles.icon} />
         </TouchableOpacity>
       </View>
     </View>
@@ -28,7 +28,7 @@ const styles = StyleSheet.create({
   todo: {
     backgroundColor: '#000',
     paddingVertical: 24,
-    paddingHorizontal: 32, // Adjusted from rem
+    paddingHorizontal: 32, 
     borderRadius: 5,
     marginTop: 16,
     flexDirection: 'row',
@@ -50,4 +50,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default Task;
+export default TaskItem;
